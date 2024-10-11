@@ -1,0 +1,967 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Results, Implication, Challenges}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+
+
+\title{Final Draft}
+
+\author{Will Thompson}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+  \textbf{Abstract}  
+
+
+This paper explores the use of machine learning techniques, specifically K-Nearest Neighbors (K-NN), to predict the amount of wins an NBA team will get in a season. The study utilizes a dataset spanning from 2003 to 2019, including individual player statistics, team performance metrics, and advanced metrics. The project evaluates different approaches, such as using individual player stats per game, season averages, and team averages, to determine their effectiveness in predicting team wins. The K-NN model demonstrated strong performance when using team average statistics, achieving a mean squared error of 13.04, translating to an average error of approximately 3.61 wins per season. The results suggest that using team-level features gives a better result than individual player statistics. Future steps for this project should be to also incorporate some individual stats like athleticism, and impact of high scoring star players on the teams.
+\end{center}   
+
+\section{Introduction and Background}
+
+\subsection{Introduction}Basketball is a sport full of data, providing a great opportunity for predictive modeling. Historically, various statistical models and regression-based methods have been employed to predict game outcomes. Advancements in machine learning have allowed researchers to explore more sophisticated approaches such as regression methods, ensemble methods, neural networks, gradient-boosting algorithms, and more, to improve prediction accuracy.
+
+\medskip
+
+This project focuses on predicting NBA game outcomes by leveraging a combination of individual player
+statistics, overall team performance metrics, and advanced team statistics. The aim is to explore how
+these factors contribute to the success or failure of a team. By developing and refining my model, the hope is to not only forecast the amount of wins a team will have with greater accuracy.
+
+\medskip
+
+In addition to predicting game results, the analysis may also provide insights into how specific player
+contributions or strategic decisions influence the overall performance of a team. This could help in identifying
+trends or patterns that are not immediately obvious through traditional analysis, offering a deeper
+understanding of the dynamics at play in an NBA game.
+
+\medskip
+
+
+
+\subsection{Background}
+
+The availability of game data and the development of more sophisticated statistical and machine learning techniques has helped increase the attention around NBA game prediction. In years past, sporting predictions heavily relied on statistical models like logistic regression and Elo ratings, which were straightforward but struggled with accuracy due to the dynamic nature of the game \cite{Manner_2016}. These models focused primarily on easily accessible player statistics like points, rebounds, and assists, but did not account for nuanced variables, i.e. dynamics, game context, advanced metrics, etc. \cite{Kubatko_Oliver_Pelton_Rosenbaum_2007}.\medskip
+
+As the field of sports analytics evolved, researchers began incorporating more complex machine learning models to improve predictive power. One of the major breakthroughs was the integration of ensemble learning methods. A primary example is that of XGBoost, which has been widely praised for its ability to handle structured data and produce incredibly accurate predictions. XGBoost, and other gradient-boosting methods, have been successful in dealing with the high-dimensional and sparse data that characterizes NBA games, outperforming traditional regression-based models in both accuracy and efficiency \cite{Horvat_Job_2022}.\medskip
+
+In parallel, models like Support Vector Machines (SVMs) have been explored in various studies due to their ability to capture non-linear relationships in the data. This is crucial in basketball predictions, where game outcomes are influenced by complex factors like player performance, team strategies, game context, etc. However, one of the ongoing challenges with machine learning models, including SVMs, is their tendency to overfit on smaller datasets, which is often the case in sports analytics where the volume of game data per season is limited \cite{Horvat_Job_2022}. \medskip
+
+Another major development has been the rise of advanced basketball metrics such as Player Efficiency Rating (PER), effective field goal percentage (eFG\%), offensive and defensive efficiency ratings, and many more. Advanced metrics provide a deeper perspective of player and team performance than traditional box score statistics and have been integrated into more recent predictive models to enhance their accuracy \cite{Osken_Onay_2022}. However, even with the use of advanced metrics, there remains the challenge of accounting for external factors like home-court advantage, back-to-back games, and player injuries, all of which can and do have a significant impact on game outcomes \cite{Manner_2016}.\medskip
+
+Advanced metrics are aimed at incorporating some of the nuance that is not included in traditional metrics. Field goal percentage does not take into account the different weights of three pointers and free throws.  Leading to the creation of effective field goal percentage which incorporates three pointers and true shooting percentage which weighs free throws as well. Metrics that include more information about a players' scoring potential, helping to produce a better understanding of a players' effectiveness. \medskip
+
+As modeling methods have improved there has been a shift to incorporating the spacial component of the game, as players have different impacts on different aspects of the game. One clear example being the Dwight effect where during the 2011 to 2013 seasons. His presence on the court reduced opponents' shot attempts near the basket by 10\%\ \cite{goldsberry2013dwight}. Understanding the causal effects of different players and incorporating relationships that are not shown in box score statistics is a key component of building better models. \medskip
+
+In addition to the growing use of machine learning models, real-time prediction has emerged as an exciting area of research, specifically with the legalization of sports betting. While most models are designed to predict game outcomes before the match begins, some studies have explored the potential of real-time models that update their predictions as new game data becomes available. For example, Ouyang et al introduced a method for real-time NBA game predictions, incorporating in-game statistics to adjust predictions dynamically throughout the match. This approach is an example of the new frontier in sports analytics, where live data streams could provide even more accurate and timely predictions, although the integration of such data into predictive models remains a challenge due to the rapid pace at which it is generated \cite{Ouyang_Li_Zhou_Wei_Zheng_Feng_Peng_2024}.\medskip
+
+Another addition used to produce better fitting models is the use of clustering methods like k-Means to group players and teams into archetypal groups. These methods give much clearer insight into the composition of a team grouping players into 26 different clusters when using advanced metrics \cite{Osken_Onay_2022} instead of the traditional 5 positions. Teams were grouped into 3 clusters \cite{cheng_predicting_2016}  using traditional box score statistics. Understanding how different players performance many change depending on the composition of the opposition is another helpful tool in producing strong basketball models.  \medskip
+
+This leads us to one of the key gaps in sports prediction: finding metrics that express contributions to a teams' win that is not expressed in box scores, including picks and good help defence. Early methods include plus/minus statistics (how well a players' team performs when they are in the game). While this allows for the capturing of all factors, its noise is introduced  by the performance of other players on the floor \cite{Kubatko_Oliver_Pelton_Rosenbaum_2007}. Novel approaches include the use of player tracking data and machine learning to to identify strategies \cite{tian_use_2019}, though raw forms of this data are not publicly available. Derived information is made available in the form of shooting and play-by-play data. Methods such as the clustering of players and teams into archetypal groups based on these more granular metrics is part of the evolving methodology used to model basketball games. 
+\medskip
+
+Interest in NBA game outcome prediction continues to push the boundaries of machine learning and data science, yet significant challenges remain in terms of model generalization, interpretability, and the inclusion of real-time and contextual factors that are not captured by traditional box scores.
+
+\subsection{Methodology in literature}
+
+There exists a wide range of methodologies used in the prediction of basketball using different sets of input parameters, some then refining input parameters using classification methods, as well as a diverse group of models with a range of complexities. While comparison between studies is difficult due to data coming from different leagues and seasons, there are some interesting trends and notable outliers to examine as we proceed through the history of basketball prediction methodology. 
+\medskip
+
+Lopez and Matthews implemented a logistic regression model using standard box score metrics, adjusted for opponent quality. They used data from both the NCAA men’s regular season and conference play to train their model for March Madness predictions \cite{lopez_building_2015}. Despite relying on simple methods and input variables, as well as the unpredictable nature of the games, their model performed very well.
+
+\medskip
+
+Ouyang et all used linear regression, and a range of ensemble models with a mix of grid search and Bayesian optimization used for hyper-parameter tuning to predict NBA game outcomes using data from basketball-reference at different points during a game using a standard array of team box score statistics. Testing after the first two quarters, again after the third quarter, and finally after play has completed. Notable even after a full game model accuracy topped out at 93\% \cite{Ouyang_Li_Zhou_Wei_Zheng_Feng_Peng_2024} with XGBoost leading in all instances in terms of accuracy and precision. Using SHAP(Shapley Additive explanations) to interpret their XGBoost models, they found interesting results in the change of significance in different features throughout different periods of play.  For example, assists were important in the first half, but lost significance in the second. While offensive rebounds and 3-point shooting percentage were much more significant later in the game. 
+
+\medskip
+
+Cheng et al used a novel approach using a Maximum Entropy Model for predicting NBA playoff outcomes using data from the NBA stats API. The model was built around the standard set of team box score statistics using K-means Clustering to represent input variables to work with their model. Showing that their model performed well over a number of seasons compared to several other traditional models. 
+
+\medskip
+
+Osken and Onay  takes a novel approach and attempts to redefine traditional player positions. Supplementing traditional box score data with advanced metrics including the spatial distribution of players shots, they clustered players into groups using a KNN model the best performing being one using cosine distances. Feeding the distribution of different player types by playing time in each game and a number of team level factors including rest time, winning percentage, etc. into an artificial neural network that predicted winners. This approach is notable for the insight into player type that was gained through clustering, as well as its ability to adapt to changes in rosters due to injury or trades between teams. The output of the model is very strong with a accuracy of 76\% \cite{Osken_Onay_2022} giving credence to their approach. 
+
+\medskip
+
+However, when it comes to using machine learning to predict the outcome of a sports game, neural networks seem to be the most popular model used. Since neural networks are able to handle large datasets and nonlinear relationships, it would seem like the best choice for sports like basketball since there are so many different variables in a single game. On average, neural networks outperform all the other models that have been used. Feed-forward, radial basis function, probabilistic, and generalized regression neural networks all produced an accuracy above 70\%. Some used individual player statistics for their model, but since basketball is a team sport the best performing models used more team focused statistics, such as defensive and offensive strategies, field goal attempts, turnovers, rebounds, and number of possessions.\cite{Horvat_Job_2022}
+
+\medskip
+
+Even though neural networks perform the best on average. The best performing model across the entire study done by Horvat and Job, where they reviewed over 100 papers\cite{Horvat_Job_2022}, was a K-NN model that had an accuracy of 83.96\% \cite{Horvat_Job_Medved_2018}. The authors used machine learning to predict Euro League basketball games. The authors used many different k values and different feature groupings. They found that the value of k doesn’t have as much impact on the accuracy of the model as much as feature selection and feature grouping does. Using a combination of team and individual statistics was the best way of predicting outcomes for a sport like basketball. In this study, feature selection was performed by using information gain, which measures how much each feature contributes to the outcome of games. First they used zero-based information gain for their grouping. If a features’ information gain was greater than zero, then it was used in the model. The second way they selected them was if a features’ information gain was greater than or equal to the average information gain of the data set, then it was selected.
+
+\medskip
+
+Overall, the methods used to predict basketball outcomes cover a wide range, from simpler models like K-NN to more complex ones like XGBoost and neural networks. While basic models can work well with the right data, machine learning approaches are better at handling all the different variables involved in predicting games. Techniques like clustering and SHAP help explain the factors driving predictions, and choosing the right features makes a big difference in accuracy. As models get even more advanced, the ability to include more detailed stats and game context shows how much further prediction methods can go.
+
+\section{Methods}
+
+\subsection{data acquisition}
+
+There a several data sources of data for the NBA, I chose to get a few data sets off of kaggle.com, which are orgininaly from stats.nba.com. An API was used to scrape data off of the official NBA website and generated 5 data sets. They are from 2003 to 2019. The games.csv file gives an overall summary of all the games during that time, while the games details data set gives the individual player statistics for each game. The players data set shows all the players in the NBA from 2003 to 2019. The ranking data set shows the performance of the teams, like how many games they won and lost. The teams data just gives a list of all of the teams in the NBA. Here is the link to the data used: \href{https://www.kaggle.com/code/nathanlauga/nba-games-eda-let-s-dive-into-the-data/input}{https://www.kaggle.com/code/nathanlauga/nba-games-eda-let-s-dive-into-the-data/input} 
+
+\subsection{K-NN}
+The K-NN method has been selected for this project because of how simple, but effective it is. This model performed consistently well in the literature review.
+
+
+\subsection{Data processing}    
+The only data set that needed cleaning up was the team data.
+
+\medskip
+
+ TEAM DATA:
+    \begin{Verbatim}[commandchars=\\\{\}]
+           TEAM\_ID  LEAGUE\_ID  SEASON\_ID STANDINGSDATE CONFERENCE     TEAM   G
+W   L  W\_PCT HOME\_RECORD ROAD\_RECORD SEASON
+149888  1610612737          0      22002    2003-10-04       East  Atlanta  82
+35  47  0.427       26-15        9-32   2002
+144294  1610612737          0      22003    2004-10-11       East  Atlanta  82
+28  54  0.341       18-23       10-31   2003
+138852  1610612737          0      22004    2005-10-09       East  Atlanta  82
+13  69  0.159        9-32        4-37   2004
+133450  1610612737          0      22005    2006-10-04       East  Atlanta  82
+26  56  0.317       18-23        8-33   2005
+127960  1610612737          0      22006    2007-10-05       East  Atlanta  82
+30  52  0.366       18-23       12-29   2006
+    \end{Verbatim}
+\centering\textbf{Table 1}: Team data set.
+
+\flushleft This data set posted the teams rankings every day, so i first removed all rankings that had less than 82 games. Then, I dropped all duplicates of rows with the same team name and seasonID.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{376}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{teams\PYZus{}data} \PY{o}{=} \PY{n}{teams\PYZus{}data}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ARENACAPACITY}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+This was the only column with null values and it's unimportant so i got rid of it.
+
+\medskip
+
+
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{379}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{games\PYZus{}details\PYZus{}data} \PY{o}{=} \PY{n}{games\PYZus{}details\PYZus{}data}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{COMMENT}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+Here the Comment column was removed because most of them were empty, and would take away a lot of usable rows.
+
+
+\hypertarget{individual-player-rolling-statistics}{%
+\subsection{Individual Player Rolling
+statistics}\label{individual-player-rolling-statistics}}
+
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+   PLAYER\_NAME      NICKNAME     TEAM\_ID       FGM      FGA    FG\_PCT      FG3M
+FG3A   FG3\_PCT       FTM       FTA    FT\_PCT      OREB       REB       AST
+STL       BLK        TO        PF       PTS  PLUS\_MINUS
+0  A.J. Guyton       Pistons  1610612765  0.000000  4.00000  0.000000  0.000000
+2.000000  0.000000  4.000000  4.000000  1.000000  1.000000  2.000000  1.000000
+1.000000  0.000000  0.000000  2.000000  4.000000         NaN
+1   AJ Hammons     Mavericks  1610612742  1.172414  2.62069  0.307724  0.172414
+0.413793  0.132172  0.310345  0.689655  0.129310  0.482759  2.068966  0.241379
+0.034483  0.551724  0.482759  1.172414  2.827586    0.068966
+2   AJ Hammons          Heat  1610612748       NaN      NaN       NaN       NaN
+NaN       NaN       NaN       NaN       NaN       NaN       NaN       NaN
+NaN       NaN       NaN       NaN       NaN         NaN
+3     AJ Price     Cavaliers  1610612739  1.500000  4.12500  0.238313  0.500000
+2.000000  0.121875  0.562500  0.875000  0.218750  0.375000  1.375000  1.375000
+0.187500  0.000000  0.312500  0.437500  4.062500   -3.750000
+4     AJ Price  Timberwolves  1610612750  0.843750  2.06250  0.281125  0.312500
+0.968750  0.173937  0.156250  0.250000  0.083344  0.031250  0.343750  0.718750
+0.156250  0.000000  0.437500  0.281250  2.156250    0.071429
+    \end{Verbatim}
+
+Here is the combining of the individual players stats and averaging them out. However, the stats are combined for the duration of the players time on one team. If they are moved to a different team then I created a new row for them and using their data on that team. A lot of players get traded and their performance can drastically change, for any number of reasons, depending on where they go. So, if that player does better or worse, it will effect the stats on the team the player left.
+
+\subsection{EDA}
+
+    \subsubsection{Identifying The Teams With The Highest Win Percentage in a season}
+ 
+
+Finding the teams with the highest win percentage will be useful in many ways. Further exploring these teams will give further insight to what leads a team to win a game. If these teams have similar player and team stats to each other, but different from the more average or lower performing teams. Then it will be a clear indication of which statistics are important for determining a teams win percentage.
+ 
+
+
+   
+
+
+
+   
+    \subsubsection{Identifying The 10 Players With The Most Points Scored In A Single Game}
+
+Identifying high scoring players can be used to see if star players have a strong impact on a teams win rate. They should have an impact on some games but since basketball is a team game, there is no way of telling if it is significant or not. This can help answer the question if its better to have 5 starters with above average stats, or is it better to have the star player overshadow their team mates. It's not that a player scoring a lot of points in a single game is important for a teams win rate. The point of this list will be identifying dominant players and seeing if the teams they are on perform well.
+    
+   
+
+    
+    \medskip
+    \medskip
+
+
+\subsubsection{Identifying The 10 Teams With The Most Wins Across All Seasons}
+
+By seeing the teams with the most wins altogether, we can see how teams perform over long periods of time. Sometimes a team will do well for a season or two and then go back to being average or below average. But, the teams who do consistently well will give much better insight to whether or not a team will win or lose.  
+
+   
+    
+
+
+    
+
+\medskip
+\subsubsection{Identifying Plus-Minus for Starting players and bench players}
+The Plus-Minus for players indicates how many points a team gained or lost relative to the opposing team when the player was in the game. Seeing how the starters plus-minus compares to a bench players plus minus can show how important the other players are to a teams success.
+
+
+    \subsubsection{The W/L Ratio For Home Games Across Every Season}
+    The game being a home or an away game could be a feature in the model, It has been known for a long time that home court advantage is a real thing.
+
+ 
+
+    \hypertarget{methodology}{%
+\subsection{Methodology}\label{methodology}}
+
+\subsubsection{Feature Selection}
+
+The features selected for this are similar to the ones used in \cite{Horvat_Job_Medved_2018}, They are field goal percentage, 3-point percentage, free throw percentage, Rebounds, Offensive Rebounds, Assists, Steals, Blocks, Turnovers, Personal Fouls, Points, and Plus-Minus.
+
+\subsubsection{Methodology}
+
+The Goal for this paper is to use K-NN to predict the amount of wins a given team will get in a season.
+ 
+\medskip
+
+There are a few ways that the wins will be predicted. First will be individual player stats by game. This shows how well each player performed each game on a team, and seeing if the performances of each player results in a win. This will see how well each player has to play in order for the game to result in a win.
+\medskip
+
+Next, will be an individual player's average statistics per season. This will see each teams player average performance every season, and seeing if those numbers correlate to how many wins that team got per season. 
+
+\medskip
+
+lastly, will be an entire teams average statistics per season. This will see how many wins a team will get based on the average stats of the entire team.
+
+
+
+    
+
+   
+\section{Results}
+\subsection{EDA Results}
+\subsubsection{Teams With The Highest Win Percentage in a season}
+ \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    \begin{center}
+    \textbf{Figure 1}:The 10 Teams with the highest win rate in any given season.
+    \end{center}
+    \medskip
+
+    To do this, the ranking data set was used and sorted by win percentage.
+
+    \subsubsection{10 Players With The Most Points Scored In A Single Game}
+
+    
+ \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_20_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    \begin{center}
+    \textbf{Figure 2:} The 10 players with the highest scoring games.    
+    \end{center}
+    
+
+    To do this, the games details data was sorted by points and merged with the games data set through a left join on GameID. 
+
+
+\subsubsection{Identifying The 10 Teams With The Most Wins Across All Seasons}
+ \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_26_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    \begin{center}
+        \textbf{Figure 3:} The 10 teams with the most cumulative wins.
+    \end{center}
+    This was done by grouping the ratings data set by team, and summing up the wins. Then sorting the data set by wins in descending order.
+
+
+    \subsubsection{Plus-Minus for Starting players and bench players}
+
+   
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_33_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+\begin{center}
+        \textbf{Figure 4:} Plus-Minus for starting players
+    \end{center}
+
+\medskip
+
+This was done by plotting the Plus-minus of any player in the games details data set with the "Start Position" in their row. Then left joined with the player data set on player name.
+
+    \medskip
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean PLUS\_MINUS for Starters: -0.88
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_34_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    \begin{center}
+        \textbf{Figure 5:} Plus-Minus for starting players
+    \end{center}
+
+\medskip
+
+This was done the same way as it was for the starters, except it was players without "Start Position" in their row.
+
+\medskip
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean PLUS\_MINUS for Bench Players: -0.92
+    \end{Verbatim}
+
+
+\subsubsection{Win percentage of at home games}
+    \begin{Verbatim}[commandchars=\\\{\}]
+Home Wins: 13651
+Home Losses: 9294
+Home Win Percentage: 59.49\%
+    \end{Verbatim}
+
+\subsection{Methodology}
+
+\medskip
+\medskip
+
+
+
+    \subsubsection{player stats(every game)}
+\begin{center}
+     \begin{Verbatim}[commandchars=\\\{\}]
+Mean Squared Error: 158.29355383348312
+        Predicted Wins  Actual Wins
+66889        41.800000           62
+517319       38.133333           49
+18084        41.133333           36
+309935       44.466667           34
+399422       43.466667           46
+    \end{Verbatim}
+\end{center}
+\begin{center}
+        \textbf{table 2:} MSE of Player stats by game
+    \end{center}
+
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_52_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+\begin{center}
+        \textbf{Figure 6:} Predicted wins VS Actual wins of table 2
+    \end{center}
+
+    \subsection{Individual average performance per season}
+   
+
+\begin{center}
+    
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean Squared Error: 94.15001116796621
+      Predicted Wins  Actual Wins
+5561       33.000000           36
+2218       48.625000           53
+2386       46.541667           54
+517        42.083333           40
+1631       50.750000           53
+    \end{Verbatim}
+\end{center}
+    \begin{center}
+        \textbf{table 3:} MSE of average individual performance per season
+    \end{center}
+
+    Here I tried seeing if the average stats for a teams players would prove
+more fruitful. I used an 80-20 train-test split and k = 24. 24 is out of
+the ordinary for a k value but i found it works the best since because
+with all the player trading that happens, there's an average of 24
+people on a team's roster within any given season. Not all at the same
+time, but their statistics still matter for how that team performed while they were there. The model performed slightly better than the last attempt, with an MSE of
+94.15. At this point, using averages seems to be the way to go but maybe
+not with individual players.
+
+   
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_66_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+\begin{center}
+        \textbf{Figure 7:} Predicted wins vs Actual wins of table 3
+    \end{center}
+
+
+    \subsection{Team average stats per season}
+\begin{center}
+    
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean Squared Error: 13.035555555555554
+     Predicted Wins  Actual Wins
+284       55.600000         62.0
+377       58.066667         54.0
+117       59.800000         58.0
+388       45.800000         50.0
+70        36.800000         42.0
+    \end{Verbatim}
+\end{center}
+\begin{center}
+        \textbf{tabel 4:} MSE of Team average stats per season
+    \end{center}
+    Here I used an 80-20 train-test split, and k=15. This model performed
+much better than the other two did. I took the average of the stats of
+every player on the team each season for each feature to use for my
+values. i used k = 15 because the data sets i used have data accross 15
+seasons, so for each team there are 15 rows of data and i thought it
+would be best to group all of the teams seasons together. I actually
+found that k=24 has the lowest error at 11.99 instead of 13.04. I didn't
+know why since it would make the most sense that once you get to
+different teams, the avereage's for each feature would be different. But
+with a little investigating, I found that every team is actually very
+balanced statistically speaking.
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_79_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    \begin{center}
+        \textbf{Figure 8:} Predicted wins vs Actual wins of table 4
+    \end{center}
+    
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_96_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+\begin{center}
+        \textbf{Figure 9:} MSE progression through revising the models
+    \end{center}
+
+
+    \section{Discussion}
+
+
+\subsection{EDA Discussion:}
+\subsubsection{The Teams With The Highest Win Percentage in a season}
+
+\flushleft In Figure 1 you can see the 10 teams with the highest win percentage. The Golden State Warriors are in the top 10 for 3 years in a row from 2015-2017. With such a consistent record for 3 years in a row, exploring this team in particular will help a lot in determining which features to pick. This list will surely prove more valuable as the data exploration goes on. Comparing other lists to this one to see if there is any overlap will give insight to whether it should be considered when selecting features.
+   
+
+
+
+   
+\subsubsection{The 10 Players With The Most Points Scored In A Single Game}
+
+\flushleft In Figure 2 you can see the 10 Players with the highest point games. Kobe Bryant is on this list 3 times. This may be indicative of high scoring players being crucial to a team winning since the LA lakers are on the list of teams with the highest win rate(Figure 1). An even bigger indication is that the years James Harden and Lebron James are on the list of highest scoring players, 2018 and 2013 respectively, are the same years that their teams are on the present in Figure 1, teams with the highest win percentage.
+    
+\medskip
+    
+\subsubsection{The 10 Teams With The Most Wins Across All Seasons}
+
+As shown in Figure 3, the Spurs have 129 more total wins than the next closest team. This is definitely a significant number. There is something in the spurs player and team stats that can help the model predict wins. A lot of the teams on this list are also in Figure 1, which can means that these teams are perfect for trying to determine what combination of features yields the best results. 
+
+   
+    
+\subsubsection{Plus-Minus for Starting players and bench players}
+
+The starters have a better plus-minus than the bench players, but not as
+much as one would expect. This might be because a lot of the time, opposing
+team's take out their starters at the same time. So it's Starters v
+starters, and then bench players v bench players so both teams are at a
+relatively similar skill level at all times. It could also be because every player in the NBA are great players and are interchangeable, but the starting positions are extremely competitive.
+
+
+\subsubsection{The W/L Ratio For Home Games Across Every Season}
+
+As expected, there is an advantage that the home team has over their opponent. Over 20,000 games were played and the home team won almost 60\% of the time. 
+    
+\subsection{Methodology Discussion:}
+
+\subsubsection{Model 1: player stats(every game)}
+
+ It was originally thought this would be a good starting point but the model
+did not perform well at all. An 80-20 train-test split and k = 15 was used here because there is an average of 15 players on a single team,and for this method it is best to group each of them together. As shown in table 2 an MSE of 158 was achieved, thats an error of about +-13. It's off by 13 games out of 82, which is a verysignificant error. The model trying to see if a team had a certain number ofwins in a season, and you take a look at a random game to see how each player performed, would the total amount of wins for the season make sense. But this was unsuccessful. At least not with KNN, the model was not great for this kind of analysis making the results inconsistent.
+
+ \subsection{Model 2: Individual average performance per season}
+   
+
+This was a revised model after the failure of model 1. This was trying to see if the average stats for a teams players would prove
+more fruitful. An 80-20 train-test split and k = 24. 24 is out of
+the ordinary for a k value but it works the best since 
+ all the player trading that happens, there's an average of 24
+people on a team's roster within any given season. Not all at the same
+time, but their statistics still matter for how that team performed while they were there. As seen in table 3, the model performed slightly better than the last attempt, with an MSE of 94.15. At this point, using averages seems to be the way to go but maybe
+not with individual players.
+
+ \subsection{Model 3: Team average stats per season}
+
+    This is a revised model of model 2. An 80-20 train-test split, and k=15. This model performed much better than the other two did, as seen in table 4, An MSE of 13.04 was Acheived. The average of the stats of every player on the team, each season, for each feature to use for the
+values. k = 15 was used because the data sets used have data across 15
+seasons, so for each team there are 15 rows of data and it was first thought that it
+would be best to group all of the teams seasons together. It was found that k=24 has the lowest error at 11.99 instead of 13.04. A reasonable explanation couldn't be found
+since it would make the most sense that once you get to
+different teams, the average's for each feature would be different. But
+with a little investigating of the raw data, It was found that every team is actually very
+balanced statistically speaking.
+
+
+\subsubsection{Additional Final Results Discussion}
+ Model 3 achieved the results of a Mean Squared Error (MSE) of 13.04, which translates to an average error of approximately 3.61 wins per team each season. 
+\medskip
+ 
+As shown in Figure 8, and table 4, The model predicted 55.6
+wins for a team that won 62 games, Predicted 58.07 wins for a team that
+won 54 games, showing strong accuracy.The model accurately predicted the number 
+of wins for teams with moderate win totals, but struggled somewhat with 
+extremes (teams with very high or low win totals).
+
+The KNN model demonstrated strong performance in predicting total NBA
+team wins, achieving a low MSE and making accurate predictions for most
+teams. 
+
+\subsection{Future improvements}
+ Incorporating individual player statistics,
+injuries, and coaching changes could improve the model's predictive
+power. Alternative Models: Testing more complex models like Random
+Forest or Gradient Boosting may further enhance accuracy. Most likely the next move would be to see if the star
+franchise players have anything to do with teams winning more games. It might seem obvious
+that it would but basketball is a team sport, and as you can see by the
+results(model performed better when using the team as a whole), It is more of a team game than an individual game. Plus, I really
+think the ability for one person change the outcome of a game is more
+superstar level, and not every team has one of those kinds of players so i dont know how
+much it will affect the results. I am also going to see if i can
+incorporate physical statistics of players. Basketball is a sport after all, so
+athleticism will no doubt play some role in a team's winning percentage.
+
+\subsection{Challenges}
+
+    The only real challenge was feature selection. It took a lot of trial
+and error to find the best features to use. There was some difficulty
+choosing the correct value for k as well. There was a lot of time spent
+playing around with k and having to look directly in the tables to try
+to find the best value. I don't think K-NN was the best choice either,
+since K-NN relies on data proximity, there are just too many variables to
+account for in the NBA.
+
+\section{Conclusion}
+
+
+In conclusion, the last KNN model performed very well with the adjusted features and k value. I found that using the average of all the players stats makes the model
+much more accurate. The data set that was used for the model was extremely large at first, which is known to be an issue for a KNN model. As shown in figures 6-8, the smaller the data set got and the more concise the features got the higher the model performed(refer to figure 9 for a view of the progression of the MSE).  
+
+
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+
+\section{Appendix}
+
+Project code: \href{https://github.com/wlthomp2/Capstone}{https://github.com/wlthomp2/Capstone}
+
+
+\end{document}
